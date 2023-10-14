@@ -91,7 +91,7 @@ async function writeCompressedFileToFile(src, dist) {
   const writable = fs.createWriteStream(dist)
   const gzip = zlib.createGzip()
 
-  const catchErr = err => {
+  const handleErr = err => {
     if (err) console.error('Pipeline failed', err)
     else console.log('Pipeline succeeded')
   }
@@ -100,14 +100,16 @@ async function writeCompressedFileToFile(src, dist) {
     readable,
     gzip,
     writable,
-    catchErr
+    handleErr
   )
 
   /** legacy .pipe()
-    readable.on('error', console.error)
-    writable.on('error', console.error)
-    gzip.on('error', console.error)
-
-    readable.pipe(gzip).pipe(writable)
+    readable
+      .on('error', console.error)
+      .pipe(gzip)
+      .on('error', console.error)
+      .pipe(writable)
+      .on('error', console.error)
+      .on('finish', () => console.log('Pipes succeeded'))
    */
 }
